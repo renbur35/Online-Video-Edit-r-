@@ -122,8 +122,16 @@ if video_file:
                         st_progress_text = st.empty()
                         logger = StreamlitLogger(st_progress_bar, st_progress_text)
                         
-                        # Çıktıyı al
-                        final_video.write_videofile(output_path, codec="libx264", audio_codec="aac", fps=video.fps, logger=logger)
+                        # Çıktıyı al (Mobil uyumluluk için yuv420p ve crf 23 ayarları eklendi)
+                        final_video.write_videofile(
+                            output_path, 
+                            codec="libx264", 
+                            audio_codec="aac", 
+                            fps=video.fps,
+                            preset="medium",
+                            ffmpeg_params=["-pix_fmt", "yuv420p", "-crf", "23"],
+                            logger=logger
+                        )
                         
                         st_progress_bar.progress(100)
                         st_progress_text.markdown("**✅ İşlem tamamlandı! 🎉**")
