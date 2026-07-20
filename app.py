@@ -5,6 +5,19 @@ import os
 import time
 import proglog
 
+def fit_cover(clip, target_w, target_h):
+    """Klibi orantısını koruyarak hedef boyutu tam kaplayacak
+    şekilde ölçeklendirir ve ortadan kırpar (object-fit: cover)."""
+    scale = max(target_w / clip.w, target_h / clip.h)
+    clip = clip.resized(scale)
+    clip = clip.cropped(
+        x_center=clip.w / 2,
+        y_center=clip.h / 2,
+        width=target_w,
+        height=target_h
+    )
+    return clip
+
 class StreamlitLogger(proglog.ProgressBarLogger):
     def __init__(self, st_bar, st_text):
         super().__init__()
@@ -112,7 +125,7 @@ if video_file:
                         
                         # Outro'yu yükle ve ana videonun boyutlarına uyarla
                         outro = VideoFileClip(selected_outro_path)
-                        outro = outro.resized(width=video.w, height=video.h)
+                        outro = fit_cover(outro, video.w, video.h)
                         
                         # Video ile Outro'yu arka arkaya birleştir
                         final_video = concatenate_videoclips([video_with_logo, outro])
